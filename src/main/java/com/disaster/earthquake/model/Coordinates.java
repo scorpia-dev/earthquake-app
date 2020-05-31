@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 public class Coordinates {
 
+
     private float longitude;
 
     private float latitude;
