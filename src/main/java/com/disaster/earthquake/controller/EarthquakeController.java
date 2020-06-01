@@ -19,7 +19,8 @@ public class EarthquakeController {
 
     @GetMapping("/earthquakes/{latitude}/{longitude}")
     public List<String> getEarthquakes(@PathVariable float latitude, @PathVariable float longitude) throws IOException {
-        return earthquakeService.getEarthquakes(latitude, longitude);
+
+        return earthquakeService.getClosestTenEarthquakes(latitude, longitude);
     }
 
 
