@@ -13,14 +13,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = EarthquakeApplication.class)
 @ExtendWith(SpringExtension.class)
@@ -32,7 +29,7 @@ public class EarthquakeServiceTest {
     public void getUserByIdTest2() throws IOException, JSONException {
 
         InputStream is = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").openStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String jsonText = readAll(rd);
 
             JSONArray jsonArray = new JSONObject(jsonText).getJSONArray("features");
@@ -40,32 +37,40 @@ public class EarthquakeServiceTest {
 
 
         Map<Coordinates,Integer> uniqueStore = new HashMap<>();
-        Map<JSONObject,Double> topTen = new HashMap<>();
-            for (int i = 0;i<length;i++) {
+        Map<JSONObject,Integer> distanceMap = new HashMap<>();
+
+        for (int i = 0;i<length;i++) {
                 Coordinates co = getCoords(jsonArray, i);
 
                 if (!uniqueStore.containsKey(co)) {
                 uniqueStore.put(co, i);
 
-                double dist = distance(40.730610, -73.935242, co.getLatitude(), co.getLongitude());
-                    topTen.put(jsonArray.getJSONObject(i), dist);
+                int dist = distance(40.730610, -73.935242, co.getLatitude(), co.getLongitude());
+                    distanceMap.put(jsonArray.getJSONObject(i), dist);
 
             }
             }
 
-        LinkedHashMap<JSONObject, Double> sortedMap =
-                topTen.entrySet().stream().
+        LinkedHashMap<JSONObject, Integer> topTenClosestDistance =
+                distanceMap.entrySet().stream().
                         sorted(Map.Entry.comparingByValue()).limit(10).
                         collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                                 (e1, e2) -> e1, LinkedHashMap::new));
 
 
+        List<String> output = new ArrayList<>();
+        for (Map.Entry<JSONObject, Integer> entry : topTenClosestDistance.entrySet()) {
+            JSONObject key = entry.getKey();
+            output.add(key.getJSONObject("properties").getString("title")+ " || " + entry.getValue());
+        }
 
+
+        assertNotNull(output);
 
        assertNotNull(uniqueStore);
-        assertNotNull(sortedMap);
+        assertNotNull(topTenClosestDistance);
 
-        assertNotNull(topTen);
+        assertNotNull(distanceMap);
 
     }
 
@@ -80,14 +85,12 @@ public class EarthquakeServiceTest {
             float lngNew = lng.floatValue();
 
             return new Coordinates(latNew, lngNew);
-            //locations.add(new Coordinates(latNew, lngNew));
-      //  }
     }
 
 
-    private double distance(double lat1, double lng1, double lat2, double lng2) {
+    private int distance(double lat1, double lng1, double lat2, double lng2) {
 
-        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+        double earthRadius = 6371; // in Kms
 
         double dLat = Math.toRadians(lat2-lat1);
         double dLng = Math.toRadians(lng2-lng1);
@@ -99,11 +102,12 @@ public class EarthquakeServiceTest {
                 * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-        return earthRadius * c; // output distance, in MILES
+        double result = Math.round(earthRadius * c); // output distance, in MILES
+        return (int) result;
+        //return Math.round(earthRadius * c); // output distance, in MILES
     }
 
-    private static String readAll(Reader rd) throws IOException {
+    private String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
         while ((cp = rd.read()) != -1) {
