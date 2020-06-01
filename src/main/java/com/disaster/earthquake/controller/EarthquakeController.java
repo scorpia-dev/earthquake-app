@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @Validated
@@ -18,7 +17,7 @@ public class EarthquakeController {
     EarthquakeService earthquakeService;
 
     @GetMapping("/earthquakes/{latitude}/{longitude}")
-    public List<String> getEarthquakes(@PathVariable float latitude, @PathVariable float longitude) throws IOException {
+    public String getEarthquakes(@PathVariable float latitude, @PathVariable float longitude) throws IOException {
 
         return earthquakeService.getClosestTenEarthquakes(latitude, longitude);
     }

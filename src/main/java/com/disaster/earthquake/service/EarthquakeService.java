@@ -1,6 +1,7 @@
 package com.disaster.earthquake.service;
 
 import com.disaster.earthquake.model.Coordinates;
+import com.disaster.earthquake.model.Earthquake;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class EarthquakeService {
 
-    public List<String> getClosestTenEarthquakes(double latitude, double longitude) throws IOException {
+    public String getClosestTenEarthquakes(double latitude, double longitude) throws IOException {
 
       if (isValidInput(latitude, longitude)) {
 
@@ -23,14 +24,25 @@ public class EarthquakeService {
 
             Map<JSONObject, Integer> distanceMap = calculateDistanceFromEachEarthquake(latitude, longitude, jsonArray);
 
-            LinkedHashMap<JSONObject, Integer> tenClosestEarthquakes = getClosestTen(distanceMap);
+            LinkedHashMap<JSONObject, Integer> tenClosestEarthquakesJsonMap = getClosestTen(distanceMap);
 
-            return getTitlesAndDistanceList(tenClosestEarthquakes);
+          List<Earthquake> earthquakes = getFinalListOfEarthquakes(tenClosestEarthquakesJsonMap);
 
-        } else {
+          return getStringOutput(earthquakes);
+
+      } else {
           throw new IllegalArgumentException("Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.");
       }
        }
+
+    private String getStringOutput(List<Earthquake> earthquakes) {
+        StringBuilder sb = new StringBuilder();
+        for (Earthquake eq:earthquakes){
+            sb.append(eq.toString());
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
 
     private boolean isValidInput(double latitude, double longitude) {
         return (latitude > -90 && latitude < 90) && (longitude > -180 && longitude < 180);
@@ -55,11 +67,11 @@ public class EarthquakeService {
         return distanceMap;
     }
 
-    private List<String> getTitlesAndDistanceList(LinkedHashMap<JSONObject, Integer> topTenClosestEarthquakes) {
-        List<String> closestTenEarthquakesList = new ArrayList<>();
+    private List<Earthquake> getFinalListOfEarthquakes(LinkedHashMap<JSONObject, Integer> topTenClosestEarthquakes) {
+        List<Earthquake> closestTenEarthquakesList = new ArrayList<>();
         for (Map.Entry<JSONObject, Integer> entry : topTenClosestEarthquakes.entrySet()) {
             JSONObject key = entry.getKey();
-            closestTenEarthquakesList.add(key.getJSONObject("properties").getString("title") + " || " + entry.getValue());
+            closestTenEarthquakesList.add(new Earthquake(key.getJSONObject("properties").getString("title"), entry.getValue()));
         }
         return closestTenEarthquakesList;
     }
