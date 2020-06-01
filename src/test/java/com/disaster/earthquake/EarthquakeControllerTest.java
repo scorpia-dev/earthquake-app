@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,13 +53,18 @@ public class EarthquakeControllerTest {
         MvcResult result = mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
+
+        String[] earthquakes = getEachEarthquake(result);
+        assertEquals(10, earthquakes.length);
+
+        assertTrue(isListInClosestDistanceOrder(earthquakes));
+
+    }
+
+    private String[] getEachEarthquake(MvcResult result) throws UnsupportedEncodingException {
         String content = result.getResponse().getContentAsString();
 
-        String[] lines = content.split("\\r?\\n");
-        assertEquals(10, lines.length);
-
-        assertTrue(isListInClosestDistanceOrder(lines));
-
+        return content.split("\\r?\\n");
     }
 
     private boolean isListInClosestDistanceOrder(String[] lines) {
@@ -71,7 +77,7 @@ public class EarthquakeControllerTest {
         assertEquals(10, distances.size());
 
         for (int i = 0; i < distances.size() - 1; i++) {
-            if (distances.get(i) < distances.get(i + 1)) {
+            if (distances.get(i) <= distances.get(i + 1)) {
                 continue;
             }
             return false;
