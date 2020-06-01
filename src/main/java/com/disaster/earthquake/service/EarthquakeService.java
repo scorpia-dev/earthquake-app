@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class EarthquakeService {
 
-    public String getClosestTenEarthquakes(double latitude, double longitude) throws IOException {
+    public String getClosestTenEarthquakes(float latitude, float longitude) throws IOException {
 
       if (isValidInput(latitude, longitude)) {
 
@@ -44,11 +44,11 @@ public class EarthquakeService {
         return sb.toString();
     }
 
-    private boolean isValidInput(double latitude, double longitude) {
+    private boolean isValidInput(float latitude, float longitude) {
         return (latitude > -90 && latitude < 90) && (longitude > -180 && longitude < 180);
     }
 
-    private Map<JSONObject, Integer> calculateDistanceFromEachEarthquake(double latitude, double longitude, JSONArray jsonArray) {
+    private Map<JSONObject, Integer> calculateDistanceFromEachEarthquake(float latitude, float longitude, JSONArray jsonArray) {
         Map<JSONObject, Integer> distanceMap = new HashMap<>();
 
         Map<Coordinates, Map<JSONObject, Integer>> uniqueLocationMap = new HashMap<>();
@@ -104,7 +104,7 @@ public class EarthquakeService {
     }
 
 
-    private int getDistance(double lat1, double lng1, double lat2, double lng2) {
+    private int getDistance(float lat1, float lng1, float lat2, float lng2) {
 
         double earthRadius = 6371; // in Kms
 
