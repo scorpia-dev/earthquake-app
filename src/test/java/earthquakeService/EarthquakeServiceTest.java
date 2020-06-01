@@ -38,32 +38,22 @@ public class EarthquakeServiceTest {
             JSONArray jsonArray = new JSONObject(jsonText).getJSONArray("features");
              int length = jsonArray.length();
 
-        ArrayList<Coordinates> locations = new ArrayList<>();
 
-        for(int i=0; i<length; i++){
-            JSONArray jo = jsonArray.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+        Map<Coordinates,Integer> uniqueStore = new HashMap<>();
+        Map<JSONObject,Double> topTen = new HashMap<>();
+            for (int i = 0;i<length;i++) {
+                Coordinates co = getCoords(jsonArray, i);
 
-            Number lat = (Number) jo.get(0);
-            float latNew = lat.floatValue();
+                if (!uniqueStore.containsKey(co)) {
+                uniqueStore.put(co, i);
 
-            Number lng = (Number) jo.get(1);
-            float lngNew = lng.floatValue();
+                double dist = distance(40.730610, -73.935242, co.getLatitude(), co.getLongitude());
+                    topTen.put(jsonArray.getJSONObject(i), dist);
 
-            locations.add(new Coordinates(latNew, lngNew));
-        }
+            }
+            }
 
-        Map<Coordinates,Double> topTen = new HashMap<>();
-            for (int i = 0;i<length;i++){
-
-                double lat =locations.get(i).getLatitude();
-                double lng = locations.get(i).getLongitude();
-                double dist = distance(40.730610, -73.935242, lat, lng);
-                if(!topTen.containsKey(locations.get(i))){
-                    topTen.put(locations.get(i),dist);
-                }
-        }
-
-        LinkedHashMap<Coordinates, Double> sortedMap =
+        LinkedHashMap<JSONObject, Double> sortedMap =
                 topTen.entrySet().stream().
                         sorted(Map.Entry.comparingByValue()).limit(10).
                         collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
@@ -72,11 +62,26 @@ public class EarthquakeServiceTest {
 
 
 
-        assertNotNull(locations);
+       assertNotNull(uniqueStore);
         assertNotNull(sortedMap);
 
         assertNotNull(topTen);
 
+    }
+
+    private Coordinates getCoords(JSONArray jsonArray, int i) throws JSONException {
+
+            JSONArray jo = jsonArray.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+
+            Number lat = (Number) jo.get(0);
+            float latNew = lat.floatValue();
+
+            Number lng = (Number) jo.get(1);
+            float lngNew = lng.floatValue();
+
+            return new Coordinates(latNew, lngNew);
+            //locations.add(new Coordinates(latNew, lngNew));
+      //  }
     }
 
 
