@@ -52,7 +52,7 @@ public class EarthquakeService {
         int i = s.indexOf('.');
         String precision = s.substring(i+1, s.length());
         if (precision.length() != 6 && StringUtils.isNumeric(precision)){
-            throw new IllegalArgumentException("Invalid input, must be in format +-00.000000, +-00.000000");
+            throw new IllegalArgumentException("Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000");
         }
         else {
             return Float.parseFloat(s);
@@ -60,7 +60,6 @@ public class EarthquakeService {
     }
 
     private boolean isValidInput(float latitude, float longitude) {
-
         return (latitude > -90 && latitude < 90) && (longitude > -180 && longitude < 180);
     }
 
