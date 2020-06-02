@@ -38,8 +38,8 @@ public class EarthquakeControllerTest {
 
     @Test
     public void standardInputTest() throws Exception {
-        float latitude = 40.730610F;
-        float longitude = -73.935242F;
+        String latitude = "40.730610";
+        String longitude = "-73.935242";
 
         mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -47,8 +47,8 @@ public class EarthquakeControllerTest {
 
     @Test
     public void verifyOutputResultTest() throws Exception {
-        float latitude = 40.730610F;
-        float longitude = -73.935242F;
+        String latitude = "40.730610";
+        String longitude = "-73.935242";
 
         MvcResult result = mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -87,8 +87,8 @@ public class EarthquakeControllerTest {
 
     @Test
     public void invalidLatitudeValueTest() throws Exception {
-        float latitude = 2240.730610F;
-        float longitude = -73.935242F;
+        String latitude = "2240.730610";
+        String longitude = "-73.935242";
 
         mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -99,8 +99,8 @@ public class EarthquakeControllerTest {
 
     @Test
     public void invalidLongitudeValueTest() throws Exception {
-        float latitude = 40.730610F;
-        float longitude = -773.935242F;
+        String latitude = "40.730610";
+        String longitude = "-773.935242";
 
         mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -110,27 +110,40 @@ public class EarthquakeControllerTest {
     }
 
     @Test
-    public void invalidInputTypeLatitudeTest() throws Exception {
-        String latitude = "test";
-        float longitude = -73.935242F;
+    public void invalidPrecisionValueTest() throws Exception {
+        String latitude = "40.7306100";
+        String longitude = "-73.9352422";
 
         mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "not valid due to validation error: latitude should be of type float")));
+                "some parameters are invalid: Invalid input, must be in format +-00.000000, +-00.000000")));
+    }
+
+    @Test
+    public void invalidInputTypeLatitudeTest() throws Exception {
+        float latitude = 40.730610F;
+        String longitude = "-73.9352422";
+
+        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400)).
+                andDo(print()).andExpect(content().string(containsString(
+                "some parameters are invalid: Invalid input, must be in format +-00.000000, +-00.000000")));
     }
 
     @Test
     public void invalidInputTypeLongitudeTest() throws Exception {
+//        String latitude = "40.730610";
+//        float longitude = -73.935242F;
         float latitude = 40.730610F;
-        String longitude = "test";
-
+        String longitude = "-73.9352422";
         mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "not valid due to validation error: longitude should be of type float")));
+                "some parameters are invalid: Invalid input, must be in format +-00.000000, +-00.000000")));
     }
 
 }

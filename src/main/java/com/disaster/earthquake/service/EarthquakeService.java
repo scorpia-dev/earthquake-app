@@ -2,6 +2,7 @@ package com.disaster.earthquake.service;
 
 import com.disaster.earthquake.model.Coordinates;
 import com.disaster.earthquake.model.Earthquake;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class EarthquakeService {
 
-    public String getClosestTenEarthquakes(float latitude, float longitude) throws IOException {
+    public String getClosestTenEarthquakes(String latitudeAsString, String longitudeAsString) throws IOException {
 
-      if (isValidInput(latitude, longitude)) {
+        float latitude = stringToFloat(latitudeAsString);
+        float longitude = stringToFloat(longitudeAsString);
+
+        if (isValidInput(latitude, longitude)) {
 
             JSONArray jsonArray = getEarthquakesJson();
 
@@ -44,7 +48,19 @@ public class EarthquakeService {
         return sb.toString();
     }
 
+    private Float stringToFloat(String s){
+        int i = s.indexOf('.');
+        String precision = s.substring(i+1, s.length());
+        if (precision.length() != 6 && StringUtils.isNumeric(precision)){
+            throw new IllegalArgumentException("Invalid input, must be in format +-00.000000, +-00.000000");
+        }
+        else {
+            return Float.parseFloat(s);
+        }
+    }
+
     private boolean isValidInput(float latitude, float longitude) {
+
         return (latitude > -90 && latitude < 90) && (longitude > -180 && longitude < 180);
     }
 
