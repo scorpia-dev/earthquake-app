@@ -1,6 +1,6 @@
 # earthquake-app
 
-This is a "Earthquake finder" RESTful Web Service with Using Java 8 and Spring Boot.
+This is a "Earthquake finder" RESTful Web Service using Java 8 and Spring Boot.
 
 [USGS Earthquake Hazards Program](https://earthquake.usgs.gov/aboutus/) is an organization that analyze earthquake threats around the world. They expose REST API outlining details of recent earthquakes happening around the world - location, magnitude, etc.
 
