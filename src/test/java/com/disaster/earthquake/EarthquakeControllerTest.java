@@ -35,40 +35,35 @@ public class EarthquakeControllerTest {
     private MockMvc mvc;
 
     String url = "/earthquakes/{latitude}/{longitude}";
+    String invalidPrecisionError = "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000";
+    String invalidParametersError = "some parameters are invalid: Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.";
+    String invalidInputTypeError = "some parameters are invalid: Invalid input, must be numerical only";
+    String latitude = "40.730610";
+    String longitude = "-73.935242";
 
     @Test
     public void standardInputTest() throws Exception {
-        String latitude = "40.730610";
-        String longitude = "-73.935242";
-
         mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
     public void verifyOutputResultTest() throws Exception {
-        String latitude = "40.730610";
-        String longitude = "-73.935242";
-
         MvcResult result = mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         String[] earthquakes = getEachEarthquake(result);
         assertEquals(10, earthquakes.length);
-
         assertTrue(isListInClosestDistanceOrder(earthquakes));
-
     }
 
     private String[] getEachEarthquake(MvcResult result) throws UnsupportedEncodingException {
         String content = result.getResponse().getContentAsString();
-
         return content.split("\\r?\\n");
     }
 
     private boolean isListInClosestDistanceOrder(String[] lines) {
-
         List<Integer> distances = new ArrayList<>();
 
         for (String line : lines) {
@@ -86,74 +81,69 @@ public class EarthquakeControllerTest {
     }
 
     @Test
-    public void invalidLatitudeValueTest() throws Exception {
-        String latitude = "2240.730610";
-        String longitude = "-73.935242";
+    public void invalidLatitudeRangeTest() throws Exception {
+        String invalidLatitude = "2240.730610";
 
-        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+        mvc.perform(get(url, invalidLatitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "some parameters are invalid: Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.")));
+                invalidParametersError)));
     }
 
     @Test
-    public void invalidLongitudeValueTest() throws Exception {
-        String latitude = "40.730610";
-        String longitude = "-773.935242";
+    public void invalidLongitudeRangeTest() throws Exception {
+        String invalidLongitude = "-773.935242";
 
-        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+        mvc.perform(get(url, latitude, invalidLongitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "some parameters are invalid: Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.")));
+                invalidParametersError)));
     }
 
     @Test
     public void invalidPrecisionLongitudeTest() throws Exception {
-        String latitude = "40.7306100";
-        String longitude = "-73.9352422";
+        String invalidLongitude = "-73.9352422";
 
-        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+        mvc.perform(get(url, latitude, invalidLongitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000")));
+                invalidPrecisionError)));
     }
 
     @Test
     public void invalidPrecisionLatitudeTest() throws Exception {
-        String latitude = "40.7306100";
-        String longitude = "-73.935242";
+        String invalidLatitude = "40.7306100";
 
-        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+        mvc.perform(get(url, latitude, invalidLatitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000")));
+                invalidPrecisionError)));
     }
 
     @Test
     public void invalidInputTypeLatitudeTest() throws Exception {
-        float latitude = 40.730610F;
-        String longitude = "-73.9352422";
+        String invalidLatitude = "40.730610F";
 
-        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+        mvc.perform(get(url, invalidLatitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000")));
+                invalidInputTypeError)));
     }
 
     @Test
     public void invalidInputTypeLongitudeTest() throws Exception {
-        String latitude = "44.730610";
-        float longitude = -73.9352422F;
-        mvc.perform(get(url, latitude, longitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
+        String invalidLongitude = "-73.33413F";
+
+        mvc.perform(get(url, latitude, invalidLongitude).accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000")));
+                invalidInputTypeError)));
     }
 
 }
