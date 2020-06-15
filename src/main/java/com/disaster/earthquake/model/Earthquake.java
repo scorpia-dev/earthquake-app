@@ -7,13 +7,17 @@ import lombok.Data;
 @AllArgsConstructor
 public class Earthquake {
 
+
+
     String title;
+
+    Coordinates coords;
 
     Integer distance;
 
     @Override
     public String toString() {
-        return title + " || " + distance + System.lineSeparator();
+        return title + " || " + distance;
     }
 
 

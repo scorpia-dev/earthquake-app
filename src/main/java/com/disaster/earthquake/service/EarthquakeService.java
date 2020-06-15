@@ -10,8 +10,13 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 
 @Service
@@ -26,38 +31,44 @@ public class EarthquakeService {
 
             JSONArray jsonArray = getEarthquakesJson();
 
-            Map<JSONObject, Integer> distanceMap = calculateDistanceFromEachEarthquake(latitude, longitude, jsonArray);
+            List<Earthquake> earthquakeList = createEarthquakeList(latitude, longitude, jsonArray);
 
-            LinkedHashMap<JSONObject, Integer> tenClosestEarthquakesJsonMap = getClosestTen(distanceMap);
+            List<Earthquake> tenClosestEarthquakes = getFinalListOfEarthquakes(earthquakeList);
 
-          List<Earthquake> earthquakes = getFinalListOfEarthquakes(tenClosestEarthquakesJsonMap);
+            return getStringOutput(tenClosestEarthquakes);
 
-          return getStringOutput(earthquakes);
+        } else {
+            throw new IllegalArgumentException("Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.");
+        }
+    }
 
-      } else {
-          throw new IllegalArgumentException("Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.");
-      }
-       }
+    private List<Earthquake> getFinalListOfEarthquakes(List<Earthquake> earthquakeList) {
+        Comparator<Earthquake> comparator = Comparator.comparing(Earthquake::getDistance);
+
+        return new ArrayList<>(earthquakeList.stream().sorted(comparator)
+                .limit(10)
+                .collect(toMap(Earthquake::getCoords, Function.identity(), (e1, e2) -> e2, LinkedHashMap::new))
+                .values());
+    }
+
 
     private String getStringOutput(List<Earthquake> earthquakes) {
         StringBuilder sb = new StringBuilder();
-        for (Earthquake eq:earthquakes){
-            sb.append(eq.toString());
-        }
+        earthquakes.forEach(eq -> sb.append(eq).append(System.lineSeparator()));
         sb.setLength(sb.length() - 1);
         return sb.toString();
     }
 
-    private Float stringToFloat(String s){
-    if (NumberUtils.isCreatable(s) && !s.contains("F")) {
-        int i = s.indexOf('.');
-        String precision = s.substring(i + 1);
-        if (precision.length() != 6) {
-            throw new IllegalArgumentException("Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000");
-        } else {
-            return Float.parseFloat(s);
+    private Float stringToFloat(String s) {
+        if (NumberUtils.isCreatable(s) && !s.contains("F")) {
+            int i = s.indexOf('.');
+            String precision = s.substring(i + 1);
+            if (precision.length() != 6) {
+                throw new IllegalArgumentException("Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000");
+            } else {
+                return Float.parseFloat(s);
+            }
         }
-    }
         throw new IllegalArgumentException("Invalid input, must be numerical only");
     }
 
@@ -66,40 +77,22 @@ public class EarthquakeService {
         return (latitude >= -90 && latitude <= 90) && (longitude >= -180 && longitude <= 180);
     }
 
-    private Map<JSONObject, Integer> calculateDistanceFromEachEarthquake(float latitude, float longitude, JSONArray jsonArray) {
-        Map<JSONObject, Integer> distanceMap = new HashMap<>();
-
-        Map<Coordinates, Map<JSONObject, Integer>> uniqueLocationMap = new HashMap<>();
+    private List<Earthquake> createEarthquakeList(float latitude, float longitude, JSONArray jsonArray) {
+        List<Earthquake> earthquakeList = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.length(); i++) {
+
             Coordinates coords = getCoords(jsonArray, i);
-
-            if (!uniqueLocationMap.containsKey(coords)) {
-
-                int dist = getDistance(latitude, longitude, coords.getLatitude(), coords.getLongitude());
-                distanceMap.put(jsonArray.getJSONObject(i), dist);
-
-                uniqueLocationMap.put(coords, distanceMap);
-            }
+            Earthquake eq = newEarthquake(i, jsonArray, getDistance(latitude, longitude, coords.getLatitude(), coords.getLongitude()), coords);
+            earthquakeList.add(eq);
         }
-        return distanceMap;
+        return earthquakeList;
     }
 
-    private List<Earthquake> getFinalListOfEarthquakes(LinkedHashMap<JSONObject, Integer> topTenClosestEarthquakes) {
-        List<Earthquake> closestTenEarthquakesList = new ArrayList<>();
-        for (Map.Entry<JSONObject, Integer> entry : topTenClosestEarthquakes.entrySet()) {
-            JSONObject key = entry.getKey();
-            closestTenEarthquakesList.add(new Earthquake(key.getJSONObject("properties").getString("title"), entry.getValue()));
-        }
-        return closestTenEarthquakesList;
+    private Earthquake newEarthquake(int i, JSONArray jsonArray, int dist, Coordinates coords) {
+        return new Earthquake(jsonArray.getJSONObject(i).getJSONObject("properties").getString("title"), coords, dist);
     }
 
-    private LinkedHashMap<JSONObject, Integer> getClosestTen(Map<JSONObject, Integer> distanceMap) {
-        return distanceMap.entrySet().stream().
-                sorted(Map.Entry.comparingByValue()).limit(10).
-                collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));
-    }
 
     private JSONArray getEarthquakesJson() throws IOException {
         InputStream is = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").openStream();
@@ -109,7 +102,7 @@ public class EarthquakeService {
         return new JSONObject(jsonText).getJSONArray("features");
     }
 
-    private Coordinates getCoords(JSONArray jsonArray, int i)  {
+    private Coordinates getCoords(JSONArray jsonArray, int i) {
         JSONArray jo = jsonArray.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
 
         Number lat = (Number) jo.get(0);
