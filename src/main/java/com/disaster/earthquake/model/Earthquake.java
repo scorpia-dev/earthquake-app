@@ -7,8 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class Earthquake {
 
-
-
     String title;
 
     Coordinates coords;
@@ -19,7 +17,6 @@ public class Earthquake {
     public String toString() {
         return title + " || " + distance;
     }
-
 
 
 }

@@ -30,16 +30,14 @@ public class EarthquakeControllerTest {
 
     @Autowired
     EarthquakeService earthquakeService;
-
-    @Autowired
-    private MockMvc mvc;
-
     String url = "/earthquakes/{latitude}/{longitude}";
     String invalidPrecisionError = "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000";
     String invalidParametersError = "some parameters are invalid: Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.";
     String invalidInputTypeError = "some parameters are invalid: Invalid input, must be numerical only";
     String latitude = "40.730610";
     String longitude = "-73.935242";
+    @Autowired
+    private MockMvc mvc;
 
     @Test
     public void standardInputTest() throws Exception {
