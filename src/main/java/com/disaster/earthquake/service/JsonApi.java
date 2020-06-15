@@ -1,14 +1,14 @@
 package com.disaster.earthquake.service;
 
-import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-@AllArgsConstructor
+@Component
 public class JsonApi {
 
     JSONArray getEarthquakesJson() throws IOException {

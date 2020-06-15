@@ -4,6 +4,7 @@ import com.disaster.earthquake.model.Coordinates;
 import com.disaster.earthquake.model.Earthquake;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,9 +14,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
+@Component
 public class EarthquakeList {
 
-    final EarthquakeFields earthquakeFields = new EarthquakeFields();
+    EarthquakeFields earthquakeFields;
 
     List<Earthquake> getFinalListOfEarthquakes(List<Earthquake> earthquakeList) {
         Comparator<Earthquake> comparator = Comparator.comparing(Earthquake::getDistance);

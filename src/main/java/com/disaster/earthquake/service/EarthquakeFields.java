@@ -4,8 +4,10 @@ import com.disaster.earthquake.model.Coordinates;
 import com.disaster.earthquake.model.Earthquake;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
+import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
+@Component
 public class EarthquakeFields {
 
     Coordinates getCoords(JSONArray jsonArray, int i) {

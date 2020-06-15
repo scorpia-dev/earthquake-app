@@ -1,9 +1,9 @@
 package com.disaster.earthquake.service;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+@Component
 public class Validation {
 
     Float stringToFloat(String s) {

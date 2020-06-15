@@ -1,19 +1,20 @@
 package com.disaster.earthquake.service;
 
 import com.disaster.earthquake.model.Earthquake;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
+@AllArgsConstructor
 @Service
 public class EarthquakeService {
 
-    private final JsonApi jsonApi = new JsonApi();
-    private final Validation validation = new Validation();
-    private final EarthquakeList earthquakeList = new EarthquakeList();
+    private final JsonApi jsonApi;
+    private final Validation validation;
+    private final EarthquakeList earthquakeList;
 
     public String getClosestTenEarthquakes(String latitudeAsString, String longitudeAsString) throws IOException {
 

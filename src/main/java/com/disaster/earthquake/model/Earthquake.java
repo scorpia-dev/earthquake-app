@@ -1,9 +1,9 @@
 package com.disaster.earthquake.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 public class Earthquake {
 
@@ -17,6 +17,5 @@ public class Earthquake {
     public String toString() {
         return title + " || " + distance;
     }
-
 
 }
