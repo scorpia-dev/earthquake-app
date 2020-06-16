@@ -1,17 +1,17 @@
-package com.disaster.earthquake.service;
+package com.disaster.earthquake.util;
 
 import com.disaster.earthquake.model.Coordinates;
-import com.disaster.earthquake.model.Earthquake;
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class EarthquakeFieldsCalculatorService {
+public class EarthquakeFieldsCalculator {
 
-    Coordinates getCoords(JSONArray jsonArray, int i) {
-        JSONArray jo = jsonArray.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+    public Coordinates getCoords(JSONObject jsonObject) {
+        JSONArray jo = jsonObject.getJSONObject("geometry").getJSONArray("coordinates");
 
         Number lat = (Number) jo.get(0);
         float latNew = lat.floatValue();
@@ -22,7 +22,7 @@ public class EarthquakeFieldsCalculatorService {
         return new Coordinates(latNew, lngNew);
     }
 
-    int getDistance(float lat1, float lng1, float lat2, float lng2) {
+    public int getDistance(float lat1, float lng1, float lat2, float lng2) {
 
         double earthRadius = 6371; // in Kms
 
@@ -38,9 +38,5 @@ public class EarthquakeFieldsCalculatorService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double result = Math.round(earthRadius * c);
         return (int) result;
-    }
-
-    Earthquake newEarthquake(int i, JSONArray jsonArray, int dist, Coordinates coords) {
-        return new Earthquake(jsonArray.getJSONObject(i).getJSONObject("properties").getString("title"), coords, dist);
     }
 }

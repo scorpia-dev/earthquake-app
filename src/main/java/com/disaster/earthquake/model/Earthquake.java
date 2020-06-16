@@ -2,6 +2,7 @@ package com.disaster.earthquake.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -11,6 +12,7 @@ public class Earthquake {
 
     Coordinates coords;
 
+    @Setter
     Integer distance;
 
     @Override

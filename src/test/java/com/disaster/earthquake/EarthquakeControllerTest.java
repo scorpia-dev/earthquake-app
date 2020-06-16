@@ -31,9 +31,10 @@ public class EarthquakeControllerTest {
     @Autowired
     EarthquakeService earthquakeService;
     String url = "/earthquakes/{latitude}/{longitude}";
-    String invalidPrecisionError = "some parameters are invalid: Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000";
-    String invalidParametersError = "some parameters are invalid: Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.";
-    String invalidInputTypeError = "some parameters are invalid: Invalid input, must be numerical only";
+    String invalidPrecisionError = "Invalid input, latitude and longitude must be in format +-00.000000, +-00.000000";
+    String invalidLongitudeError = "Invalid input, The longitude must be between -180 and 180.";
+    String invalidLatitudeError = "Invalid input, The latitude must be a number between -90 and 90.";
+    String invalidInputTypeError = "Invalid input, must be numerical only";
     String latitude = "40.730610";
     String longitude = "-73.935242";
     @Autowired
@@ -86,7 +87,7 @@ public class EarthquakeControllerTest {
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                invalidParametersError)));
+                invalidLatitudeError)));
     }
 
     @Test
@@ -97,7 +98,7 @@ public class EarthquakeControllerTest {
                 .andExpect(status().isBadRequest()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400)).
                 andDo(print()).andExpect(content().string(containsString(
-                invalidParametersError)));
+                invalidLongitudeError)));
     }
 
     @Test
