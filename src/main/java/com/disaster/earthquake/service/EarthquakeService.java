@@ -12,28 +12,14 @@ import java.util.List;
 @Service
 public class EarthquakeService {
 
-    private final JsonApi jsonApi;
-    private final Validation validation;
-    private final EarthquakeList earthquakeList;
+    private final JsonApiService jsonApiService;
+    private final EarthquakeListService earthquakeListService;
 
-    public String getClosestTenEarthquakes(String latitudeAsString, String longitudeAsString) throws IOException {
-
-        float latitude = validation.stringToFloat(latitudeAsString);
-        float longitude = validation.stringToFloat(longitudeAsString);
-
-        if (validation.isValidInput(latitude, longitude)) {
-
-            JSONArray jsonArray = jsonApi.getEarthquakesJson();
-
-            List<Earthquake> allEarthQuakes = earthquakeList.createEarthquakeList(latitude, longitude, jsonArray);
-
-            List<Earthquake> tenClosestEarthquakes = earthquakeList.getFinalListOfEarthquakes(allEarthQuakes);
-
-            return getStringOutput(tenClosestEarthquakes);
-
-        } else {
-            throw new IllegalArgumentException("Invalid input, The latitude must be a number between -90 and 90 and the longitude between -180 and 180.");
-        }
+    public String getClosestTenEarthquakes(String latitude, String longitude) throws IOException {
+        JSONArray jsonArray = jsonApiService.getEarthquakesJson();
+        List<Earthquake> allEarthquakes = earthquakeListService.createEarthquakeList(latitude, longitude, jsonArray);
+        List<Earthquake> tenClosestEarthquakes = earthquakeListService.getFinalListOfEarthquakes(allEarthquakes);
+        return getStringOutput(tenClosestEarthquakes);
     }
 
     private String getStringOutput(List<Earthquake> earthquakes) {

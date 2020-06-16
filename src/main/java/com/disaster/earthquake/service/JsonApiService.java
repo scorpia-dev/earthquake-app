@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class JsonApi {
+public class JsonApiService {
 
     JSONArray getEarthquakesJson() throws IOException {
         InputStream is = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").openStream();

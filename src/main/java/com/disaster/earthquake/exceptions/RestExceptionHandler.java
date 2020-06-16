@@ -18,6 +18,11 @@ public class RestExceptionHandler {
         return new ResponseEntity<>("not valid due to validation error: " + error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidCoordinatesException.class)
+    public ResponseEntity<?> handleInvalidCoordinatesException(InvalidCoordinatesException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {

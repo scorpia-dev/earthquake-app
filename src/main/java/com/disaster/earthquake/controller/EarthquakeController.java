@@ -1,6 +1,9 @@
 package com.disaster.earthquake.controller;
 
 import com.disaster.earthquake.service.EarthquakeService;
+import com.disaster.earthquake.validation.ValidCoordinates;
+import com.disaster.earthquake.validation.ValidLatitude;
+import com.disaster.earthquake.validation.ValidLongitude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +20,7 @@ public class EarthquakeController {
     EarthquakeService earthquakeService;
 
     @GetMapping("/earthquakes/{latitude}/{longitude}")
-    public String getEarthquakes(@PathVariable String latitude, @PathVariable String longitude) throws IOException {
+    public String getEarthquakes(@ValidCoordinates @ValidLatitude @PathVariable String latitude, @ValidCoordinates @ValidLongitude @PathVariable String longitude) throws IOException {
         return earthquakeService.getClosestTenEarthquakes(latitude, longitude);
     }
 }

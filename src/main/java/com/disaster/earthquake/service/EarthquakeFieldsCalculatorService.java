@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class EarthquakeFields {
+public class EarthquakeFieldsCalculatorService {
 
     Coordinates getCoords(JSONArray jsonArray, int i) {
         JSONArray jo = jsonArray.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");

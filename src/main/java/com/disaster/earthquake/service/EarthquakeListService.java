@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Component
-public class EarthquakeList {
+public class EarthquakeListService {
 
-    EarthquakeFields earthquakeFields;
+    EarthquakeFieldsCalculatorService earthquakeFieldsCalculatorService;
 
     List<Earthquake> getFinalListOfEarthquakes(List<Earthquake> earthquakeList) {
         Comparator<Earthquake> comparator = Comparator.comparing(Earthquake::getDistance);
@@ -27,11 +27,14 @@ public class EarthquakeList {
                 .values());
     }
 
-    List<Earthquake> createEarthquakeList(float latitude, float longitude, JSONArray jsonArray) {
+    List<Earthquake> createEarthquakeList(String latitude, String longitude, JSONArray jsonArray) {
         List<Earthquake> earthquakeList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            Coordinates coords = earthquakeFields.getCoords(jsonArray, i);
-            Earthquake eq = earthquakeFields.newEarthquake(i, jsonArray, earthquakeFields.getDistance(latitude, longitude, coords.getLatitude(), coords.getLongitude()), coords);
+            Coordinates coords = earthquakeFieldsCalculatorService.getCoords(jsonArray, i);
+
+            Earthquake eq = earthquakeFieldsCalculatorService.newEarthquake(i, jsonArray, earthquakeFieldsCalculatorService.getDistance
+                    (Float.parseFloat(latitude), Float.parseFloat(longitude), coords.getLatitude(), coords.getLongitude()), coords);
+
             earthquakeList.add(eq);
         }
         return earthquakeList;
