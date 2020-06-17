@@ -31,7 +31,7 @@ public class JsonApiUtil {
         }).collect(Collectors.toList());
     }
 
-    private JSONArray getJsonFromApi() throws IOException {
+    public JSONArray getJsonFromApi() throws IOException {
         InputStream is = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").openStream();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         String jsonText = readAll(rd);
