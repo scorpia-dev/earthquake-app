@@ -25,6 +25,6 @@ public class JsonApiUtilTest {
     public void getJsonFromApiTest() throws IOException {
         JSONArray jsonArrayAllEarthquakes = jsonApiUtil.getJsonFromApi();
         assertTrue(jsonArrayAllEarthquakes.length() > 1000);
-        System.out.printlns("There are " + jsonArrayAllEarthquakes.length() + " Earthquakes in the API");
+        System.out.println("There are " + jsonArrayAllEarthquakes.length() + " Earthquakes in the API");
     }
 }
