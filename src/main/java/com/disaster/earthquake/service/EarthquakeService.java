@@ -1,25 +1,23 @@
 package com.disaster.earthquake.service;
 
 import com.disaster.earthquake.model.Earthquake;
-import com.disaster.earthquake.util.EarthquakeListUtil;
-import com.disaster.earthquake.util.JsonApiUtil;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
-@AllArgsConstructor
+import static com.disaster.earthquake.utils.EarthquakeApiUtil.getAlLEarthquakes;
+import static com.disaster.earthquake.utils.EarthquakeListUtil.calculateDistanceForEachEarthquake;
+import static com.disaster.earthquake.utils.EarthquakeListUtil.getFinalListOfEarthquakes;
+
 @Service
 public class EarthquakeService {
 
-    private final JsonApiUtil jsonApiUtil;
-    private final EarthquakeListUtil earthquakeListUtil;
 
     public String getClosestTenEarthquakes(String latitude, String longitude) throws IOException {
-        List<Earthquake> earthquakesWithoutDistance = jsonApiUtil.getEarthquakes();
-        List<Earthquake> calculatedDistanceList = earthquakeListUtil.calculateDistance(latitude, longitude, earthquakesWithoutDistance);
-        List<Earthquake> tenClosestEarthquakes = earthquakeListUtil.getFinalListOfEarthquakes(calculatedDistanceList);
+        List<Earthquake> earthquakesWithoutDistance = getAlLEarthquakes("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson");
+        List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakesWithoutDistance);
+        List<Earthquake> tenClosestEarthquakes = getFinalListOfEarthquakes(calculatedDistanceList);
         return getStringOutput(tenClosestEarthquakes);
     }
 

@@ -3,7 +3,6 @@ package com.disaster.earthquake;
 import com.disaster.earthquake.model.Coordinates;
 import com.disaster.earthquake.model.Earthquake;
 import com.disaster.earthquake.service.EarthquakeService;
-import com.disaster.earthquake.util.EarthquakeListUtil;
 import com.sun.tools.javac.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.disaster.earthquake.utils.EarthquakeListUtil.calculateDistanceForEachEarthquake;
+import static com.disaster.earthquake.utils.EarthquakeListUtil.getFinalListOfEarthquakes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = EarthquakeApplication.class)
@@ -23,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureMockMvc
 public class EarthquakeListUtilTest {
 
-    @Autowired
-    EarthquakeListUtil earthquakeListUtil;
 
     @Autowired
     EarthquakeService earthquakeService;
@@ -54,8 +53,8 @@ public class EarthquakeListUtilTest {
             return new Earthquake("Earthquake " + i, earthquakeCoords.get(i), 0);
         }).collect(Collectors.toList());
 
-        java.util.List<Earthquake> calculatedDistanceList = earthquakeListUtil.calculateDistance(latitude, longitude, earthquakes);
-        java.util.List<Earthquake> finalList = earthquakeListUtil.getFinalListOfEarthquakes(calculatedDistanceList);
+        java.util.List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakes);
+        java.util.List<Earthquake> finalList = getFinalListOfEarthquakes(calculatedDistanceList);
 
         System.out.println(earthquakeService.getStringOutput(finalList));
 
@@ -98,8 +97,8 @@ public class EarthquakeListUtilTest {
                 .mapToObj(i -> new Earthquake("Earthquake " + i, earthquakeCoordsDuplicates.get(i), 0))
                 .collect(Collectors.toList());
 
-        java.util.List<Earthquake> calculatedDistanceList = earthquakeListUtil.calculateDistance(latitude, longitude, earthquakes);
-        java.util.List<Earthquake> finalList = earthquakeListUtil.getFinalListOfEarthquakes(calculatedDistanceList);
+        java.util.List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakes);
+        java.util.List<Earthquake> finalList = getFinalListOfEarthquakes(calculatedDistanceList);
 
 
         java.util.List<Coordinates> coordsList = finalList.stream().map(Earthquake::getCoords).collect(Collectors.toList());

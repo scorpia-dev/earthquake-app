@@ -1,11 +1,9 @@
-package com.disaster.earthquake.util;
+package com.disaster.earthquake.utils;
 
 import com.disaster.earthquake.model.Coordinates;
 import com.disaster.earthquake.model.Earthquake;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.URL;
@@ -14,32 +12,43 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Component
-public class JsonApiUtil {
 
-    @Autowired
-    EarthquakeFieldsCalculator earthquakeFieldsCalculator;
+public final class EarthquakeApiUtil {
 
-    public List<Earthquake> getEarthquakes() throws IOException {
-        JSONArray jsonArray = getJsonFromApi();
+    private EarthquakeApiUtil() {
+    }
 
+    public static List<Earthquake> getAlLEarthquakes(String url) throws IOException {
+        JSONArray jsonArray = getJsonFromApi(url);
         return IntStream.range(0, jsonArray.length()).mapToObj(i ->
         {
-            Coordinates coords = earthquakeFieldsCalculator.getCoords(jsonArray.getJSONObject(i));
+            Coordinates coords = getCoords(jsonArray.getJSONObject(i));
             String title = jsonArray.getJSONObject(i).getJSONObject("properties").getString("title");
             return new Earthquake(title, coords, 0);
         }).collect(Collectors.toList());
     }
 
-    public JSONArray getJsonFromApi() throws IOException {
-        InputStream is = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").openStream();
+    private static Coordinates getCoords(JSONObject jsonObject) {
+        JSONArray jo = jsonObject.getJSONObject("geometry").getJSONArray("coordinates");
+
+        Number lat = (Number) jo.get(0);
+        float latNew = lat.floatValue();
+
+        Number lng = (Number) jo.get(1);
+        float lngNew = lng.floatValue();
+        return new Coordinates(latNew, lngNew);
+    }
+
+    private static JSONArray getJsonFromApi(String url) throws IOException {
+
+        InputStream is = new URL(url).openStream();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         String jsonText = readAll(rd);
 
         return new JSONObject(jsonText).getJSONArray("features");
     }
 
-    String readAll(Reader rd) throws IOException {
+    private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
         while ((cp = rd.read()) != -1) {
@@ -47,4 +56,5 @@ public class JsonApiUtil {
         }
         return sb.toString();
     }
+
 }
