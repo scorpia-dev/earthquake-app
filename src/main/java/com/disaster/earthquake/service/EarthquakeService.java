@@ -26,7 +26,7 @@ public class EarthquakeService {
         return getStringOutput(tenClosestEarthquakes);
     }
 
-    public String getStringOutput(List<Earthquake> earthquakes) {
+    private String getStringOutput(List<Earthquake> earthquakes) {
         StringBuilder sb = new StringBuilder();
         earthquakes.forEach(eq -> sb.append(eq).append(System.lineSeparator()));
         sb.setLength(sb.length() - 1);
