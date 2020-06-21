@@ -4,15 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @AllArgsConstructor
 public class Earthquake {
 
-    String title;
+    private final String title;
 
-    Coordinates coords;
+    @Getter
+    private final Coordinates coords;
 
     @Setter
+    @Getter
     Integer distance;
 
     @Override

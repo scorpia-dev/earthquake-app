@@ -45,5 +45,12 @@ public final class EarthquakeListUtil {
         return (int) result;
     }
 
+    public static String getStringOutput(List<Earthquake> earthquakes) {
+        StringBuilder sb = new StringBuilder();
+        earthquakes.forEach(eq -> sb.append(eq).append(System.lineSeparator()));
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
+
 
 }

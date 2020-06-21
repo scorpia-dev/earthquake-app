@@ -1,17 +1,14 @@
 package com.disaster.earthquake.model;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
-@EqualsAndHashCode
-@Getter
-@AllArgsConstructor
+import lombok.Value;
+
+
+@Value
 public class Coordinates {
 
-    private final float longitude;
+    float longitude;
 
-    private final float latitude;
-
+    float latitude;
 
 }

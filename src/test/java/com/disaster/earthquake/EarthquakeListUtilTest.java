@@ -15,8 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.disaster.earthquake.utils.EarthquakeListUtil.calculateDistanceForEachEarthquake;
-import static com.disaster.earthquake.utils.EarthquakeListUtil.getTenClosestEarthquakes;
+import static com.disaster.earthquake.utils.EarthquakeListUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = EarthquakeApplication.class)
@@ -56,7 +55,7 @@ public class EarthquakeListUtilTest {
         java.util.List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakes);
         java.util.List<Earthquake> finalList = getTenClosestEarthquakes(calculatedDistanceList);
 
-        System.out.println(earthquakeService.getStringOutput(finalList));
+        System.out.println(getStringOutput(finalList));
 
         assertEquals(10, finalList.size());
     }
@@ -104,7 +103,7 @@ public class EarthquakeListUtilTest {
         java.util.List<Coordinates> coordsList = finalList.stream().map(Earthquake::getCoords).collect(Collectors.toList());
         Assertions.assertThat(coordsList).doesNotHaveDuplicates();
 
-        System.out.println(earthquakeService.getStringOutput(finalList));
+        System.out.println(getStringOutput(finalList));
         assertEquals(10, finalList.size());
     }
 
