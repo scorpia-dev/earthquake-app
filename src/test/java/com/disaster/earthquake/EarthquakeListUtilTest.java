@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.disaster.earthquake.utils.EarthquakeListUtil.calculateDistanceForEachEarthquake;
-import static com.disaster.earthquake.utils.EarthquakeListUtil.getFinalListOfEarthquakes;
+import static com.disaster.earthquake.utils.EarthquakeListUtil.getTenClosestEarthquakes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = EarthquakeApplication.class)
@@ -54,7 +54,7 @@ public class EarthquakeListUtilTest {
         }).collect(Collectors.toList());
 
         java.util.List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakes);
-        java.util.List<Earthquake> finalList = getFinalListOfEarthquakes(calculatedDistanceList);
+        java.util.List<Earthquake> finalList = getTenClosestEarthquakes(calculatedDistanceList);
 
         System.out.println(earthquakeService.getStringOutput(finalList));
 
@@ -98,7 +98,7 @@ public class EarthquakeListUtilTest {
                 .collect(Collectors.toList());
 
         java.util.List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakes);
-        java.util.List<Earthquake> finalList = getFinalListOfEarthquakes(calculatedDistanceList);
+        java.util.List<Earthquake> finalList = getTenClosestEarthquakes(calculatedDistanceList);
 
 
         java.util.List<Coordinates> coordsList = finalList.stream().map(Earthquake::getCoords).collect(Collectors.toList());

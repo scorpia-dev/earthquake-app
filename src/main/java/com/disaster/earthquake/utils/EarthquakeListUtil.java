@@ -13,7 +13,7 @@ public final class EarthquakeListUtil {
     private EarthquakeListUtil() {
     }
 
-    public static List<Earthquake> getFinalListOfEarthquakes(List<Earthquake> earthquakeList) {
+    public static List<Earthquake> getTenClosestEarthquakes(List<Earthquake> earthquakeList) {
         return earthquakeList.stream()
                 .collect(Collectors.toMap(Earthquake::getCoords, Function.identity(), (e1, e2) -> e2, LinkedHashMap::new))
                 .values().stream()
@@ -23,10 +23,8 @@ public final class EarthquakeListUtil {
     }
 
     public static List<Earthquake> calculateDistanceForEachEarthquake(String latitude, String longitude, List<Earthquake> earthquakes) {
-        float floatLatitude = Float.parseFloat(latitude);
-        float floatLongitude = Float.parseFloat(longitude);
 
-        earthquakes.forEach(x -> x.setDistance(getDistance(floatLatitude, floatLongitude,
+        earthquakes.forEach(x -> x.setDistance(getDistance(Float.parseFloat(latitude), Float.parseFloat(longitude),
                 x.getCoords().getLatitude(), x.getCoords().getLongitude())));
 
         return earthquakes;

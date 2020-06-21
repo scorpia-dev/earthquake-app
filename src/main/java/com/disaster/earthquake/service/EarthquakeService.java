@@ -8,16 +8,21 @@ import java.util.List;
 
 import static com.disaster.earthquake.utils.EarthquakeApiUtil.getAlLEarthquakes;
 import static com.disaster.earthquake.utils.EarthquakeListUtil.calculateDistanceForEachEarthquake;
-import static com.disaster.earthquake.utils.EarthquakeListUtil.getFinalListOfEarthquakes;
+import static com.disaster.earthquake.utils.EarthquakeListUtil.getTenClosestEarthquakes;
 
 @Service
 public class EarthquakeService {
 
 
     public String getClosestTenEarthquakes(String latitude, String longitude) throws IOException {
-        List<Earthquake> earthquakesWithoutDistance = getAlLEarthquakes("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson");
-        List<Earthquake> calculatedDistanceList = calculateDistanceForEachEarthquake(latitude, longitude, earthquakesWithoutDistance);
-        List<Earthquake> tenClosestEarthquakes = getFinalListOfEarthquakes(calculatedDistanceList);
+
+        List<Earthquake> tenClosestEarthquakes =
+                getTenClosestEarthquakes(
+                        calculateDistanceForEachEarthquake(
+                                latitude,
+                                longitude,
+                                getAlLEarthquakes("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson")));
+
         return getStringOutput(tenClosestEarthquakes);
     }
 
