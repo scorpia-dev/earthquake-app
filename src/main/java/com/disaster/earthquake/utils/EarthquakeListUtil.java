@@ -23,15 +23,12 @@ public final class EarthquakeListUtil {
     }
 
     public static List<Earthquake> calculateDistanceForEachEarthquake(String latitude, String longitude, List<Earthquake> earthquakes) {
-
         earthquakes.forEach(x -> x.setDistance(getDistance(Float.parseFloat(latitude), Float.parseFloat(longitude),
                 x.getCoords().getLatitude(), x.getCoords().getLongitude())));
-
         return earthquakes;
     }
 
     private static int getDistance(float lat1, float lng1, float lat2, float lng2) {
-
         double earthRadius = 6371; // in Kms
 
         double dLat = Math.toRadians(lat2 - lat1);

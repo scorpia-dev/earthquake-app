@@ -40,7 +40,6 @@ public final class EarthquakeApiUtil {
     }
 
     private static JSONArray getJsonFromApi(String url) throws IOException {
-
         InputStream is = new URL(url).openStream();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         String jsonText = readAll(rd);
